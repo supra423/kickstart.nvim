@@ -1,6 +1,7 @@
 return {
   {
     'mfussenegger/nvim-dap',
+
     dependencies = {
       'rcarriga/nvim-dap-ui',
       'nvim-neotest/nvim-nio',
@@ -14,7 +15,42 @@ return {
     config = function()
       local dap = require 'dap'
       local dapui = require 'dapui'
-
+      -- ~/.local/share/nvim/mason/packages/cpptools/extension/debugAdapters/bin
+      dap.adapters.cppdbg = {
+        id = 'cppdbg',
+        type = 'executable',
+        command = '/home/supra/.local/share/cpptools/extension/debugAdapters/bin/OpenDebugAD7',
+      }
+      dap.configurations.rust = {
+        {
+          name = 'Launch file',
+          type = 'cppdbg',
+          request = 'launch',
+          program = function()
+            return vim.fn.input('Path to executable (Input project name at the end): ', vim.fn.getcwd() .. '/target/debug/', 'file')
+          end,
+          cwd = '${workspaceFolder}',
+          stopAtEntry = false,
+        },
+      }
+      -- dap.adapters.gdb = {
+      --   type = 'executable',
+      --   command = 'gdb',
+      --   args = { '--interpreter=dap', '--eval-command', 'set print pretty on' },
+      -- }
+      -- dap.configurations.c = {
+      --   {
+      --     name = 'Launch file',
+      --     type = 'gdb',
+      --     request = 'launch',
+      --     program = function()
+      --       return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+      --     end,
+      --     cwd = '${workspaceFolder}',
+      --     stopOnEntry = false,
+      --   },
+      -- }
+      -- dap.configurations.cpp = dap.configurations.c
       dapui.setup()
 
       dap.listeners.after.event_initialized['dapui_config'] = function()
